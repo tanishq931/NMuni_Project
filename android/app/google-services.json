@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "26161700823",
+    "project_id": "nmuni-ab8f0",
+    "storage_bucket": "nmuni-ab8f0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:26161700823:android:268c6a7ac04b1fee9d3592",
+        "android_client_info": {
+          "package_name": "com.nmuni.nmuni_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfZzC8TJ7sGcyArICXuz3jag5L3Kxr7oc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
