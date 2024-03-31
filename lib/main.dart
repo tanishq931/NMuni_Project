@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nmuni_project/screens/LoginScreen.dart';
+import 'package:nmuni_project/screens/LoginScreen/LoginScreen.dart';
 
 void main(){
   runApp(const MyApp());
