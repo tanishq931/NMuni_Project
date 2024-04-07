@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 
 class OpenAiFeatures{
-  // final String openAIAPIKey = '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';
   final String openAIAPIKey = 'pk-ptUkpEKGBeaWcAzAxWrbJonKckVEdoeNcHHuntrrRFlTiasO';
 
   Future<String> chatGPTAPI(List messages) async {
