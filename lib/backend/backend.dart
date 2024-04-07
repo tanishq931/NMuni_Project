@@ -13,7 +13,7 @@ class OpenAiFeatures{
         Uri.parse('https://api.pawan.krd/v1/chat/completions'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $openAIAPIKey',
+          'Authorization': 'Bearer Yahape daal dena key',
         },
         body: jsonEncode({
           // "model": "gpt-3.5-turbo",
