@@ -2,9 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_gemini/google_gemini.dart';
+import 'package:lottie/lottie.dart';
 import 'package:nmuni_project/Themes/Colors.dart';
 import 'package:nmuni_project/Themes/TextStyles.dart';
-import 'package:nmuni_project/backend/backend.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -18,8 +19,10 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController searchQuery = TextEditingController();
   Color btnColor = AppColors.btnColor;
   Color btnTextColor = AppColors.backgroundColor;
-  List<Map<String,String>> messages=[];
-  bool loading =false;
+  final apiKey = 'AIzaSyAXHSAAudhwLnHWsKjiZcoRYzKKdLZSRJ8';
+  List<Map<String, dynamic>> messages = [
+  ];
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             backgroundColor: AppColors.backgroundColor,
             body: Container(
-              padding: EdgeInsets.all(10).copyWith(bottom: 5),
+              padding: EdgeInsets.all(10),
               child: Center(
                 child: Column(
                   children: [
@@ -49,11 +52,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     itemCount: messages.length,
                                     itemBuilder: (context, index) {
                                       int msgIndex =
-                                          messages.length -
-                                              index -
-                                              1;
-                                      String? msgRole = messages[msgIndex]['role'];
-                                      String? msg = messages[msgIndex]['content'];
+                                          messages.length - index - 1;
+                                      String? msgRole =
+                                          messages[msgIndex]['role'];
+                                      String? msg =
+                                          messages[msgIndex]['content'];
                                       return Row(
                                         textDirection: msgRole == 'user'
                                             ? TextDirection.rtl
@@ -153,6 +156,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ],
                                 ),
                               )),
+                    loading
+                        ? Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              width: 100,
+                              margin: const EdgeInsets.symmetric(vertical: 10),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                  color: AppColors.background1,
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: ClipRect(
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  heightFactor:
+                                      0.5, // Adjust this value to control the amount of cropping from the top
+                                  child: Align(
+                                      alignment: Alignment.bottomCenter,
+                                      heightFactor:
+                                          0.8, // Adjust this value to control the amount of cropping from the bottom
+                                      child: Container(
+                                        child: Lottie.asset(
+                                            'assets/lottie/loading.json',
+                                            height: 100),
+                                      )),
+                                ),
+                              ),
+                            ),
+                          )
+                        :Container(),
                     Container(
                         margin: EdgeInsets.only(top: 5),
                         height: 50,
@@ -165,12 +198,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: TextField(
                                       controller: searchQuery,
                                       style: heading(size: 15),
-                                      onTapOutside: (_){
-                                         if(messages.length==0 && searchQuery.text.length==0 && chatStarted){
-                                           setState(() {
-                                           chatStarted=false;
-                                           });
-                                         }
+                                      onTapOutside: (_) {
+                                        if (messages.length == 0 &&
+                                            searchQuery.text.length == 0 &&
+                                            chatStarted) {
+                                          setState(() {
+                                            chatStarted = false;
+                                          });
+                                        }
                                       },
                                       decoration: InputDecoration(
                                           contentPadding: EdgeInsets.symmetric(
@@ -179,13 +214,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           hintStyle: heading(size: 15),
                                           enabledBorder: OutlineInputBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(15),
+                                                  BorderRadius.circular(30),
                                               borderSide: BorderSide(
                                                   color: AppColors.cream,
                                                   width: 1)),
                                           focusedBorder: OutlineInputBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(15),
+                                                  BorderRadius.circular(30),
                                               borderSide: BorderSide(
                                                   color: AppColors.text,
                                                   width: 1))),
@@ -200,38 +235,36 @@ class _HomeScreenState extends State<HomeScreen> {
                             Expanded(
                               flex: chatStarted ? 0 : 1,
                               child: GestureDetector(
-                                onTap: () async{
-                                  if(chatStarted  && searchQuery.text.length>0){
+                                onTap: () async {
+                                  if (chatStarted &&
+                                      searchQuery.text.length > 1) {
                                     messages.add({
-                                      'role':'user',
-                                      'content':searchQuery.text
+                                      'role': 'user',
+                                      'content': searchQuery.text
                                     });
-                                    String content= await OpenAiFeatures().chatGPTAPI(messages);
-                                    var response = {
-                                      'role':'assistant',
-                                      'content':content
-                                    };
                                     setState(() {
-                                      searchQuery.text='';
-                                      messages.add(response);
+                                      loading=true;
+                                      searchQuery.text = '';
                                     });
-                                  }
-                                  else{
+
+                                    chatGPTAPI();
+                                  } else {
                                     setState(() {
-                                      chatStarted=true;
+                                      chatStarted = true;
                                     });
                                   }
                                 },
-                                onTapDown: (_){
+                                onTapDown: (_) {
                                   setState(() {
-                                    btnColor = AppColors.btnColor.withOpacity(0.5);
-                                    btnTextColor=AppColors.title;
+                                    btnColor =
+                                        AppColors.btnColor.withOpacity(0.5);
+                                    btnTextColor = AppColors.title;
                                   });
                                 },
-                                onTapUp: (_){
+                                onTapUp: (_) {
                                   setState(() {
                                     btnColor = AppColors.btnColor;
-                                    btnTextColor=AppColors.backgroundColor;
+                                    btnTextColor = AppColors.backgroundColor;
                                   });
                                 },
                                 child: chatStarted
@@ -258,12 +291,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 color: AppColors.background2),
                                             borderRadius:
                                                 BorderRadius.circular(10),
-                                            color:  AppColors.btnColor),
+                                            color: AppColors.btnColor),
                                         child: Center(
                                           child: Text('Get Started   🚀',
                                               style: title(
                                                   size: 16,
-                                                  color: AppColors.backgroundColor)),
+                                                  color: AppColors
+                                                      .backgroundColor)),
                                         ),
                                       ),
                               ),
@@ -274,5 +308,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             )));
+  }
+  Future chatGPTAPI() async{
+    final gemini = GoogleGemini(
+      apiKey: apiKey,
+    );
+    await gemini
+        .generateFromText(messages[messages.length - 1]['content'])
+        .then((value) {
+      var response = {
+        'role': 'assistant',
+        'content': value.text
+      };
+       setState(() {
+         loading=false;
+         messages.add(response);
+       });
+    }).onError((error, stackTrace) {
+      setState(() {
+        loading=false;
+      });
+    });
   }
 }
